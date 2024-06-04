@@ -1,3 +1,5 @@
+package io.codething;
+
 /**
  * Activities
  */
