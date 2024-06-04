@@ -37,17 +37,9 @@ public class TrackerApp {
     }
 
     public int totalCaloriesBurnt(String userId, boolean includeBmr) {
-
-        if(includeBmr){
-            return Optional.ofNullable(getUser(userId))
-                .map(User::totalCaloriesBurntIncludingBmr)
+        return Optional.ofNullable(getUser(userId))
+                .map(user -> includeBmr ? user.totalCaloriesBurntIncludingBmr() : user.totalCaloriesBurntExcludingBmr())
                 .orElse(0);
-        }else{
-            return Optional.ofNullable(getUser(userId))
-                .map(User::totalCaloriesBurntExcludingBmr)
-                .orElse(0);
-        }
-
     }
 
     public int totalDurationInMinutes(String userId) {
