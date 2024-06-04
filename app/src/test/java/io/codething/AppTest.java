@@ -15,6 +15,6 @@ class TrackerAppTest {
     @Test void appHasThings() {
         TrackerApp app = new TrackerApp();
         
-        assertThat(app.totalActivities(), is(0));
+        assertThat(app.totalActivities(""), is(0));
     }
 }

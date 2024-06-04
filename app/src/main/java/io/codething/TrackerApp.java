@@ -3,23 +3,86 @@
  */
 package io.codething;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 public class TrackerApp {
 
-    
-    public void addActivity(Activity activity) {
-        // TODO
+    //Mimics a database of users
+    private final List<User> users = new ArrayList<>();
+
+    public void addUser(User user) {
+        users.add(user);
     }
 
-    public int totalActivities() {
-        // TODO
-        return 0;
-    }   
-    
-    public int totalCalories() {
-        // TODO
-        return 0;
+    public User getUser(final String userId) {
+        return users.stream()
+                .filter(user -> user.getUserId().equalsIgnoreCase(userId))
+                .findFirst()
+                .orElse(null);
     }
 
-    // TODO: accessor for total duration of all activities.
-    
+
+    public void addActivity(final String userId, final Activity activity) {
+        Optional.ofNullable(getUser(userId))
+                .ifPresent(user -> user.addActivity(activity));
+    }
+
+    public int totalActivities(final String userId) {
+        return Optional.ofNullable(getUser(userId))
+                .map(User::totalActivities)
+                .orElse(0);
+    }
+
+    public int totalCaloriesBurnt(String userId, boolean includeBmr) {
+
+        if(includeBmr){
+            return Optional.ofNullable(getUser(userId))
+                .map(User::totalCaloriesBurntIncludingBmr)
+                .orElse(0);
+        }else{
+            return Optional.ofNullable(getUser(userId))
+                .map(User::totalCaloriesBurntExcludingBmr)
+                .orElse(0);
+        }
+
+    }
+
+    public int totalDurationInMinutes(String userId) {
+        return Optional.ofNullable(getUser(userId))
+                .map(User::totalDurationInMinutes)
+                .orElse(0);
+    }
+
+    public static void main(String[] args) {
+        TrackerApp app = new TrackerApp();
+
+        User emmett = new User("emmett", 70, 1500);
+        User andy = new User("andy", 75, 1650);
+
+        app.addUser(emmett);
+        app.addUser(andy);
+
+        app.addActivity("emmett", new Running(13, 2000));
+        app.addActivity("emmett", new Walking(60, 5000));
+        app.addActivity("emmett", new Swimming(10, 500));
+
+
+        app.addActivity("andy", new Running(45, 5000));
+        app.addActivity("andy", new Walking(60, 5000));
+        app.addActivity("andy", new Swimming(20, 900));
+
+        Arrays.asList(emmett, andy).forEach(user -> {
+            System.out.println("-------------------------------------------" + user.getUserId() + "-------------------------------------------");
+            System.out.println(user.getUserId() + "'s Total Activities: " + app.totalActivities(user.getUserId()));
+            System.out.println(user.getUserId() + "'s Total Duration: " + app.totalDurationInMinutes(user.getUserId()) + " minutes");
+            System.out.println(user.getUserId() + "'s Total Calories Including BMR: " + app.totalCaloriesBurnt(user.getUserId(), true) + " calories");
+            System.out.println(user.getUserId() + "'s Total Calories Excluding BMR: " + app.totalCaloriesBurnt(user.getUserId(), false) + " calories");
+        });
+
+
+    }
+
 }

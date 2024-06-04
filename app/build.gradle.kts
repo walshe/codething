@@ -41,5 +41,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("io.codething.App")
+    mainClass.set("io.codething.TrackerApp")
 }
