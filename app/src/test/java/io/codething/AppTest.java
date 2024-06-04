@@ -5,12 +5,21 @@ package io.codething;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import org.hamcrest.MatcherAssert.assertThat;
+import org.hamcrest.Matchers.*;
 
 class TrackerAppTest {
-    @Test void appHasThnigs() {
+    @Test void appHasThings() {
         TrackerApp classUnderTest = new TrackerApp();
+        var expectedValue = "expected";
+        var actualValue = "expected";
 
+        // Using Hamcrest matchers for assertions
+        assertThat(actualValue, is(expectedValue));
     }
 
 //
