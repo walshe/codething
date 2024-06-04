@@ -13,32 +13,8 @@ import org.hamcrest.Matchers.*;
 
 class TrackerAppTest {
     @Test void appHasThings() {
-        TrackerApp classUnderTest = new TrackerApp();
-        var expectedValue = "expected";
-        var actualValue = "expected";
-
-        // Using Hamcrest matchers for assertions
-        assertThat(actualValue, is(expectedValue));
+        TrackerApp app = new TrackerApp();
+        
+        assertThat(app.totalActivities(), is(0));
     }
-
-//
-//    IGNORE
-//
-//    /**
-//     * write a java test that can take this "mktx:100,cflt:200,apple:150,alpha:23,drill:78"
-//     */
-//    @Test void shouldProcessThis() {
-//
-//        final var payload = "mktx:100,cflt:200,apple:150,alpha:23,drill:78";
-//
-//        int lowest = 78;
-//
-//        Assertions.assertEquals(lowest, 78);
-//
-//
-//
-//    }
-
-
-
 }
