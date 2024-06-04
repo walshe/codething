@@ -6,7 +6,7 @@ public class BaseActivity {
 
     private final int distanceInMeters;
 
-    //TODO record date of activity for better reporting
+    //TODO record date of activity for better reporting using the Timeframe enum
 
     public BaseActivity(final int durationInMinutes, final int distanceInMeters) {
         this.durationInMinutes = durationInMinutes;
