@@ -13,20 +13,23 @@ class TrackerAppTest {
 
     }
 
-    /**
-     * write a java test that can take this "mktx:100,cflt:200,apple:150,alpha:23,drill:78"
-     */
-    @Test void shouldProcessThis() {
-
-        final var payload = "mktx:100,cflt:200,apple:150,alpha:23,drill:78";
-
-        int lowest = 78;
-
-        Assertions.assertEquals(lowest, 78);
-
-
-
-    }
+//
+//    IGNORE
+//
+//    /**
+//     * write a java test that can take this "mktx:100,cflt:200,apple:150,alpha:23,drill:78"
+//     */
+//    @Test void shouldProcessThis() {
+//
+//        final var payload = "mktx:100,cflt:200,apple:150,alpha:23,drill:78";
+//
+//        int lowest = 78;
+//
+//        Assertions.assertEquals(lowest, 78);
+//
+//
+//
+//    }
 
 
 
