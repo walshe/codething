@@ -1,6 +1,8 @@
 package io.codething;
 
-public class BaseActivity {
+import java.util.Objects;
+
+public abstract class BaseActivity {
 
     private final int durationInMinutes;
 
@@ -19,5 +21,18 @@ public class BaseActivity {
 
     public int getDistanceInMeters() {
         return distanceInMeters;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseActivity that = (BaseActivity) o;
+        return durationInMinutes == that.durationInMinutes && distanceInMeters == that.distanceInMeters;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(durationInMinutes, distanceInMeters);
     }
 }

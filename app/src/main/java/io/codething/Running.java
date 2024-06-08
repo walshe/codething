@@ -1,6 +1,6 @@
 package io.codething;
 
-public class Running extends BaseActivity implements Activity{
+public final class Running extends BaseActivity implements Activity{
 
     public Running(final int durationInMinutes, final int distanceInMeters){
         super(durationInMinutes, distanceInMeters);

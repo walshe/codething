@@ -15,7 +15,7 @@ public class TrackerApp {
 
     public void addUser(User newUser) {
         if (users.stream().anyMatch(user -> user.getUserId().equalsIgnoreCase(newUser.getUserId()))) {
-            throw new IllegalArgumentException("UserId already exists: " + newUser.getUserId());
+            throw new IllegalArgumentException("UserId already exists (case is insensitive) : " + newUser.getUserId());
         }
         users.add(newUser);
     }
@@ -60,7 +60,6 @@ public class TrackerApp {
             User andy = new User("andy", 75, 1650);
 
             app.addUser(emmett);
-            app.addUser(new User("Emmett", 71, 1500));
             app.addUser(andy);
 
             app.addActivity("emmett", new Running(13, 2000));

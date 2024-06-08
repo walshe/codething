@@ -1,6 +1,6 @@
 package io.codething;
 
-public class Swimming extends BaseActivity implements Activity{
+public final class Swimming extends BaseActivity implements Activity{
 
     public Swimming(final int durationInMinutes, final int distanceInMeters){
         super(durationInMinutes, distanceInMeters);

@@ -9,6 +9,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    jacoco
 }
 
 repositories {
@@ -20,6 +21,11 @@ dependencies {
     // This dependency is used by the application.
     implementation(libs.guava)
     testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
+    testImplementation("org.powermock:powermock-api-mockito2:2.0.9")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
 }
 
 testing {
@@ -28,6 +34,7 @@ testing {
         val test by getting(JvmTestSuite::class) {
             // Use JUnit Jupiter test framework
             useJUnitJupiter("5.10.0")
+
         }
     }
 }
@@ -42,4 +49,30 @@ java {
 application {
     // Define the main class for the application.
     mainClass.set("io.codething.TrackerApp")
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+// JaCoCo configuration
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    finalizedBy(tasks.jacocoTestReport) // Generate the report after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // Tests must run before generating the report
+
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(file("build/reports/jacoco"))
+    }
 }
