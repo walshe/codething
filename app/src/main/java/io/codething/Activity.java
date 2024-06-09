@@ -5,9 +5,9 @@ package io.codething;
  */
 interface Activity {
 
-    int getDurationInMinutes();
+	int getDurationInMinutes();
 
-    int getDistanceInMeters();
+	int getDistanceInMeters();
 
-    int getCaloriesBurnt();
+	int getCaloriesBurnt();
 }

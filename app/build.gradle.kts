@@ -10,6 +10,7 @@ plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
     jacoco
+    id("com.diffplug.spotless") version "6.0.0"
 }
 
 repositories {
@@ -74,5 +75,34 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         csv.required.set(false)
         html.outputLocation.set(file("build/reports/jacoco"))
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+
+spotless {
+    java {
+        // Apply
+        //googleJavaFormat("1.15.0")
+        eclipse() //use default eclispe formatting
+
+
+        // Apply additional rules
+        target("src/**/*.java")
+    }
+    kotlin {
+        // Apply ktlint for Kotlin code
+        ktlint("0.41.0").userData(mapOf("disabled_rules" to "no-wildcard-imports"))
+        target("src/**/*.kt")
+    }
+    format("misc") {
+        target("*.gradle.kts", "*.md", ".gitignore")
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }

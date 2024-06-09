@@ -21,206 +21,202 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TrackerAppTest {
 
-    private TrackerApp app;
+	private TrackerApp app;
 
-    @Mock
-    private User userMock;
+	@Mock
+	private User userMock;
 
-    @Mock
-    private User userMock2;
+	@Mock
+	private User userMock2;
 
+	@Mock
+	private Activity activityMock;
 
-    @Mock
-    private Activity activityMock;
+	@BeforeEach
+	void beforeAll() {
+		app = new TrackerApp();
+	}
 
-    @BeforeEach
-    void beforeAll() {
-        app = new TrackerApp();
-    }
+	@Test
+	void appHasThings() {
+		assertThat(app.totalActivities(""), is(0));
 
-    @Test
-    void appHasThings() {
-        assertThat(app.totalActivities(""), is(0));
+		// add some things
+		User emmett = new User("emmett", 70, 1500);
+		User andy = new User("andy", 75, 1650);
 
+		app.addUser(emmett);
+		app.addUser(andy);
 
-        // add some things
-        User emmett = new User("emmett", 70, 1500);
-        User andy = new User("andy", 75, 1650);
+		app.addActivity("emmett", new Running(13, 2000));
+		app.addActivity("emmett", new Walking(60, 5000));
+		app.addActivity("emmett", new Swimming(10, 500));
 
-        app.addUser(emmett);
-        app.addUser(andy);
+		app.addActivity("andy", new Running(45, 5000));
+		app.addActivity("andy", new Walking(60, 5000));
+		app.addActivity("andy", new Swimming(20, 900));
 
-        app.addActivity("emmett", new Running(13, 2000));
-        app.addActivity("emmett", new Walking(60, 5000));
-        app.addActivity("emmett", new Swimming(10, 500));
+		assertThat(app.totalActivities("emmett"), is(3));
+		assertThat(app.totalActivities("emmett"), is(3));
 
+	}
 
-        app.addActivity("andy", new Running(45, 5000));
-        app.addActivity("andy", new Walking(60, 5000));
-        app.addActivity("andy", new Swimming(20, 900));
+	@Test
+	void duplicateUser() {
+		assertThat(app.totalActivities(""), is(0));
 
-        assertThat(app.totalActivities("emmett"), is(3));
-        assertThat(app.totalActivities("emmett"), is(3));
+		// add some things
+		User emmett = new User("emmett", 70, 1500);
+		User anotherEmmett = new User("emMETT", 75, 1650);
 
-    }
+		app.addUser(emmett);
 
-    @Test
-    void duplicateUser() {
-        assertThat(app.totalActivities(""), is(0));
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			app.addUser(anotherEmmett);
+		});
 
-        // add some things
-        User emmett = new User("emmett", 70, 1500);
-        User anotherEmmett = new User("emMETT", 75, 1650);
+		assertThat(exception.getMessage(), is("UserId already exists (case is insensitive) : emmett"));
 
-        app.addUser(emmett);
+	}
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            app.addUser(anotherEmmett);
-        });
+	@Test
+	void addUser() {
 
-        assertThat(exception.getMessage(), is("UserId already exists (case is insensitive) : emmett"));
+		// verify users are empty
+		List<User> users = Whitebox.getInternalState(app, "users");
+		assertThat(users, is(notNullValue()));
+		assertThat(users, is(empty()));
 
+		// call actual method
+		app.addUser(userMock);
 
-    }
+		// verify
+		users = Whitebox.getInternalState(app, "users");
 
-    @Test
-    void addUser() {
+		assertThat(users, is(notNullValue()));
+		assertThat(users, is(not(empty())));
 
-        //verify users are empty
-        List<User> users = Whitebox.getInternalState(app, "users");
-        assertThat(users, is(notNullValue()));
-        assertThat(users, is(empty()));
+		assertThat(users, hasItem(userMock));
 
-        // call actual method
-        app.addUser(userMock);
+	}
 
-        // verify
-        users = Whitebox.getInternalState(app, "users");
+	@Test
+	void getUser() {
 
-        assertThat(users, is(notNullValue()));
-        assertThat(users, is(not(empty())));
+		String userId = "emmett";
+		when(userMock.getUserId()).thenReturn(userId);
 
-        assertThat(users, hasItem(userMock));
+		// call actual method
+		User user = app.getUser("emmett");
+		assertThat(user, is(nullValue()));
 
-    }
+		// add a mock user
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock));
 
-    @Test
-    void getUser() {
+		// verify we can get it via getUser
+		user = app.getUser("emmett");
+		assertThat(user, is(notNullValue()));
+		assertThat(user, is(userMock));
 
-        String userId = "emmett";
-        when(userMock.getUserId()).thenReturn(userId);
+	}
 
-        // call actual method
-        User user = app.getUser("emmett");
-        assertThat(user, is(nullValue()));
+	@Test
+	void addActivity() {
 
-        // add a mock user
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock));
+		// setup
+		String userId = "emmett";
+		when(userMock.getUserId()).thenReturn(userId);
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
 
-        // verify we can get it via getUser
-        user = app.getUser("emmett");
-        assertThat(user, is(notNullValue()));
-        assertThat(user, is(userMock));
+		// call actual method
+		app.addActivity(userId, activityMock);
 
-    }
+		// verify it gets correct user from list
+		// verify that is will call correct method on that user
+		verify(userMock).addActivity(activityMock);
+		verify(userMock2, never()).addActivity(activityMock);
 
-    @Test
-    void addActivity() {
+	}
 
-        //setup
-        String userId = "emmett";
-        when(userMock.getUserId()).thenReturn(userId);
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
+	@Test
+	void totalActivities() {
 
-        // call actual method
-        app.addActivity(userId, activityMock);
+		// setup
+		String userId = "emmett";
 
-        // verify it gets correct user from list
-        // verify that is will call correct method on that user
-        verify(userMock).addActivity(activityMock);
-        verify(userMock2, never()).addActivity(activityMock);
+		int totalActivities = app.totalActivities(userId);
+		assertThat(totalActivities, is(0));
 
-    }
+		when(userMock.getUserId()).thenReturn(userId);
+		when(userMock.totalActivities()).thenReturn(100);
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
 
-    @Test
-    void totalActivities() {
+		// call actual method
+		totalActivities = app.totalActivities(userId);
 
-        //setup
-        String userId = "emmett";
+		// verify its calling correct underlying method on correct user
+		assertThat(totalActivities, is(100));
+		verify(userMock).totalActivities();
 
-        int totalActivities = app.totalActivities(userId);
-        assertThat(totalActivities, is(0));
+	}
 
-        when(userMock.getUserId()).thenReturn(userId);
-        when(userMock.totalActivities()).thenReturn(100);
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
+	@Test
+	void totalCaloriesBurntWithBmr() {
+		// setup
+		String userId = "emmett";
 
-        // call actual method
-        totalActivities = app.totalActivities(userId);
+		int totalCaloriesBurntWithBmr = app.totalCaloriesBurnt(userId, true);
+		assertThat(totalCaloriesBurntWithBmr, is(0));
 
-        // verify its calling correct underlying method on correct user
-        assertThat(totalActivities, is(100));
-        verify(userMock).totalActivities();
+		when(userMock.getUserId()).thenReturn(userId);
+		when(userMock.totalCaloriesBurntIncludingBmr()).thenReturn(10000);
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
 
-    }
+		// call actual method
+		totalCaloriesBurntWithBmr = app.totalCaloriesBurnt(userId, true);
 
-    @Test
-    void totalCaloriesBurntWithBmr() {
-        //setup
-        String userId = "emmett";
+		// verify its calling correct underlying method on correct user
+		assertThat(totalCaloriesBurntWithBmr, is(10000));
+		verify(userMock).totalCaloriesBurntIncludingBmr();
+	}
 
-        int totalCaloriesBurntWithBmr = app.totalCaloriesBurnt(userId, true);
-        assertThat(totalCaloriesBurntWithBmr, is(0));
+	@Test
+	void totalCaloriesBurntWithoutBmr() {
+		// setup
+		String userId = "emmett";
 
-        when(userMock.getUserId()).thenReturn(userId);
-        when(userMock.totalCaloriesBurntIncludingBmr()).thenReturn(10000);
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
+		int totalCaloriesBurntWithoutBmr = app.totalCaloriesBurnt(userId, false);
+		assertThat(totalCaloriesBurntWithoutBmr, is(0));
 
-        // call actual method
-        totalCaloriesBurntWithBmr = app.totalCaloriesBurnt(userId, true);
+		when(userMock.getUserId()).thenReturn(userId);
+		when(userMock.totalCaloriesBurntExcludingBmr()).thenReturn(10000);
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
 
-        // verify its calling correct underlying method on correct user
-        assertThat(totalCaloriesBurntWithBmr, is(10000));
-        verify(userMock).totalCaloriesBurntIncludingBmr();
-    }
+		// call actual method
+		totalCaloriesBurntWithoutBmr = app.totalCaloriesBurnt(userId, false);
 
-    @Test
-    void totalCaloriesBurntWithoutBmr() {
-        //setup
-        String userId = "emmett";
+		// verify its calling correct underlying method on correct user
+		assertThat(totalCaloriesBurntWithoutBmr, is(10000));
+		verify(userMock).totalCaloriesBurntExcludingBmr();
+	}
 
-        int totalCaloriesBurntWithoutBmr = app.totalCaloriesBurnt(userId, false);
-        assertThat(totalCaloriesBurntWithoutBmr, is(0));
+	@Test
+	void totalDurationInMinutes() {
+		// setup
+		String userId = "emmett";
 
-        when(userMock.getUserId()).thenReturn(userId);
-        when(userMock.totalCaloriesBurntExcludingBmr()).thenReturn(10000);
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
+		int totalDurationInMinutes = app.totalDurationInMinutes(userId);
+		assertThat(totalDurationInMinutes, is(0));
 
-        // call actual method
-        totalCaloriesBurntWithoutBmr = app.totalCaloriesBurnt(userId, false);
+		when(userMock.getUserId()).thenReturn(userId);
+		when(userMock.totalDurationInMinutes()).thenReturn(100);
+		Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
 
-        // verify its calling correct underlying method on correct user
-        assertThat(totalCaloriesBurntWithoutBmr, is(10000));
-        verify(userMock).totalCaloriesBurntExcludingBmr();
-    }
+		// call actual method
+		totalDurationInMinutes = app.totalDurationInMinutes(userId);
 
-    @Test
-    void totalDurationInMinutes() {
-        //setup
-        String userId = "emmett";
-
-        int totalDurationInMinutes = app.totalDurationInMinutes(userId);
-        assertThat(totalDurationInMinutes, is(0));
-
-        when(userMock.getUserId()).thenReturn(userId);
-        when(userMock.totalDurationInMinutes()).thenReturn(100);
-        Whitebox.setInternalState(app, "users", Arrays.asList(userMock, userMock2));
-
-        // call actual method
-        totalDurationInMinutes = app.totalDurationInMinutes(userId);
-
-        // verify its calling correct underlying method on correct user
-        assertThat(totalDurationInMinutes, is(100));
-        verify(userMock).totalDurationInMinutes();
-    }
+		// verify its calling correct underlying method on correct user
+		assertThat(totalDurationInMinutes, is(100));
+		verify(userMock).totalDurationInMinutes();
+	}
 }
